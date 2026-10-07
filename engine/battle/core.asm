@@ -4938,7 +4938,7 @@ GetDamageVarsForEitherAttack:
 	and a 
 	ret z ; return if move power 0
 	ld a, [hl]
-	and $f0
+	and $80
 	;swap a shouldn't be necessary
 	jr nz, .specialAttack
 	ld hl, wEnemyMonDefense
