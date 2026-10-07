@@ -9,7 +9,13 @@ MACRO move
 	db \2 ; effect
 	db \3 ; power
 	;db ((\4) << 4) | (\5) ; phys/spec/stat .. type
-	db ((\4) << 7) | ((\6) << 4) | ((\4) << 3) | (\5) ; the table expects primary type first, and secondary type second. We're going to use the primary type in the low nibble, and secondary in the high nibble as primary type is used more often
+	IF \4 == PHYSICAL_ATTACK
+		db ((\6) << 4) | (\5) ; the table expects primary type first, and secondary type second. We're going to use the primary type in the low nibble, and secondary in the high nibble as primary type is used more often
+	ELIF \4 == SPECIAL_ATTACK
+		db (1 << 7) | ((\6) << 4) | (\5)
+	ELIF \4 == STATUS_ATTACK
+		db (1 << 7) | ((\6) << 4) | (1 << 3) | (\5)
+	ENDC
 	db \7 percent ; accuracy
 	db ((\8) << 4) | \9 ; pp1 | pp2
 ENDM

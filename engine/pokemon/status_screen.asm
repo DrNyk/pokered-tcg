@@ -424,6 +424,26 @@ StatusScreen2:
 	jr nz, .printSecondType
 .escapeEarly
 	pop de ; this restores the 14, 10 for our first PP
+	push de ; cache this location
+	ld hl, 3 - SCREEN_WIDTH ; go backwards to the same line as the printed name, but to print special characters
+	add hl, de ; hl now points to the spot to put a type symbol and our physical/special/status symbol
+	ld de, wMoveData + 3 ; gets me the types with physical/special prefix
+	ld a, [de]
+	and $07 ; strip down to primary type
+	add $BF ; offset for type glyph
+	ld [hli], a
+	ld a, [de]
+	and $88 ; strip down to physical (0, $80 for special, and $88 for status)
+	cp $80
+	ld a, $D1 ; SPECIAL glyph
+	jr z, .gotGlyph
+	inc a ; STATUS glyph
+	jr nc, .gotGlyph
+	dec a
+	dec a ; PHYSICAL glyph
+.gotGlyph
+	ld [hl], a
+	pop de ; reset back aligned to PP writing
 	ld hl, SCREEN_WIDTH * 2
 	add hl, de
 	ld d, h

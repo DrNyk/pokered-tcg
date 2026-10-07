@@ -16,6 +16,5 @@ DEF NUM_TYPES EQU const_value
 	
 	const PHYSICAL_ATTACK ; $00
 	const SPECIAL_ATTACK ; $01
-	
-	DEF STATUS_ATTACK EQU $01 ; also $01
+	const STATUS_ATTACK ; $02
 	

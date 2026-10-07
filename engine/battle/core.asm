@@ -3330,6 +3330,17 @@ PrintMenuItem:
 	hlcoord 5, 9
 	ld [hl], '/'
 	inc hl
+	ld [hli], a
+	ld a, [wPlayerMoveType]
+	and $88 ; strip to just the bits controlling physical or not
+	cp $80
+	ld a, $D1 ; special
+	jr z, .gotGlyph
+	inc a ; status
+	jr nc, .gotGlyph
+	dec a
+	dec a ; physical
+.gotGlyph
 	ld [hl], a
 	hlcoord 1, 9
 	ld de, TypeText
@@ -4940,7 +4951,7 @@ GetDamageVarsForEitherAttack:
 	ld a, [hl]
 	and $80
 	;swap a shouldn't be necessary
-	jr nz, .specialAttack
+	jr nz, .specialAttack ; or technically a status attack, but the move power = 0 addresses that for us
 	ld hl, wEnemyMonDefense
 	; fall through here when a is zero
 	or e ; if this becomes true, then it's enemy. if it's false, it's player turn
