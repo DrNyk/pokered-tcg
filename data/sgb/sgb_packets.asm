@@ -149,12 +149,12 @@ BlkPacket_NidorinoIntro:
 BlkPacket_PartyMenu:
 	ATTR_BLK 7
 	ATTR_BLK_DATA %110, 0,0,1, 01,00, 02,12 ; mon sprites: pal 0, everything else: pal 1
-	ATTR_BLK_DATA %010, 0,0,0, 05,01, 11,01 ; HP bar 0: pal set dynamically
-	ATTR_BLK_DATA %010, 0,0,0, 05,03, 11,03 ; HP bar 1: pal set dynamically
-	ATTR_BLK_DATA %010, 0,0,0, 05,05, 11,05 ; HP bar 2: pal set dynamically
-	ATTR_BLK_DATA %010, 0,0,0, 05,07, 11,07 ; HP bar 3: pal set dynamically
-	ATTR_BLK_DATA %010, 0,0,0, 05,09, 11,09 ; HP bar 4: pal set dynamically
-	ATTR_BLK_DATA %010, 0,0,0, 05,11, 11,11 ; HP bar 5: pal set dynamically
+	ATTR_BLK_DATA %010, 0,0,0, 05,00, 20,01 ; HP bar 0: pal set dynamically
+	ATTR_BLK_DATA %010, 0,0,0, 05,02, 20,03 ; HP bar 1: pal set dynamically
+	ATTR_BLK_DATA %010, 0,0,0, 05,04, 20,05 ; HP bar 2: pal set dynamically
+	ATTR_BLK_DATA %010, 0,0,0, 05,06, 20,07 ; HP bar 3: pal set dynamically
+	ATTR_BLK_DATA %010, 0,0,0, 05,08, 20,09 ; HP bar 4: pal set dynamically
+	ATTR_BLK_DATA %010, 0,0,0, 05,10, 20,11 ; HP bar 5: pal set dynamically
 	ds 4, 0
 
 ; unused

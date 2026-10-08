@@ -333,7 +333,15 @@ SetPartyMenuHPBarColor:
 	ld c, a
 	ld b, 0
 	add hl, bc
+	ld a, [wIsInBattle]
+	and a
+	ld b, b
+	jr z, .vanilla
+	call GetHealthBarColor2
+	jr .vanillaskip
+.vanilla
 	call GetHealthBarColor
+.vanillaskip
 	ld b, SET_PAL_PARTY_MENU_HP_BARS
 	call RunPaletteCommand
 	ld hl, wWhichPartyMenuHPBar
@@ -381,4 +389,23 @@ PrintEnergyRow:
 	pop hl
 	pop de
 	pop bc
+	ret
+	
+GetHealthBarColor2:
+; Return at hl the palette of
+; an HP bar e pixels long.
+; a normal hp bar is 48 pixels long (6 tiles)
+; I have my shortking at 16 pixels long (2 tiles)
+	ld a, e
+	add e ; trying to triple e back to how it acts like it's a 6-tile hp bar, not sure if this will work for precision against the cp 10 that isn't divisible by 3, but, whatever.
+	add e
+	cp 27 ; originally 27
+	ld d, 0 ; green
+	jr nc, .gotColor
+	cp 10 ; originally 10, doesn't divide 3 perfectly
+	inc d ; yellow
+	jr nc, .gotColor
+	inc d ; red
+.gotColor
+	ld [hl], d
 	ret
