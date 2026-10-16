@@ -12,15 +12,7 @@ GetHPBarLength:
 	ld [hli], a
 	ld a, c
 	ld [hli], a
-	ld a, [wHPBarType]
-	cp $2 ; for the party display with energy
-	ld [hl], $30 ; = 48 pixels
-	jr nz, .vanillaLength
-	ld a, [wIsInBattle]
-	and a
-	jr z, .vanillaLength ; not in battle so do normal max length
-	ld [hl], $10
-.vanillaLength
+	ld [hl], $30
 	call Multiply      ; 48 * bc (hp bar is 48 pixels long)
 	ld a, d
 	and a
@@ -118,7 +110,7 @@ UpdateHPBar2:
 	call UpdateHPBar_PrintHPNumber
 	and a
 	jr z, .noPixelDifference
-	call UpdateHPBar_AnimateHPBar ; is this the troublesome one? Is this who calls it? 
+	call UpdateHPBar_AnimateHPBar
 .noPixelDifference
 	ld a, [wHPBarNewHP]
 	ld [wHPBarOldHP], a
@@ -151,33 +143,36 @@ UpdateHPBar_AnimateHPBar:
 	push af
 	push de
 	ld d, $6
-	ld a, [wHPBarType]
-	cp $2
-	jr nz, .vanilla0
-	ld a, [wIsInBattle]
-	and a
-	jr z, .vanilla0
-	ld d, $2
-.vanilla0
-	call DrawHPBar
-	ld c, 2
-	call DelayFrames
-	pop de
+;/// DrNyk Insert
 	ld a, [wHPBarType]
 	cp $2
 	jr nz, .vanilla
 	ld a, [wIsInBattle]
 	and a
-	jr z, .vanilla ; not in battle either
-	ld a, [wHPBarDelta]
-	add e
-	cp $11
-	jr .mergepoint
+	jr z, .vanilla
+	ld d, $2 ; otherwise we're drawing 2 tiles and e needs to be scaled to 1/3rd
+	ld a, e
+	ldh [hDividend], a
+	ld b, 1
+	ld a, 3
+	ldh [hDivisor], a
+	call Divide
+	ldh a, [hQuotient + 3]
+	push de
+	ld e, a
+	call DrawHPBar
+	pop de
+	jr .vanillaskip
+;/// DrNykInsert
 .vanilla
+	call DrawHPBar
+.vanillaskip
+	ld c, 2
+	call DelayFrames
+	pop de
 	ld a, [wHPBarDelta] ; +1 or -1
 	add e
 	cp $31
-.mergepoint
 	jr nc, .barFilledUp
 	ld e, a
 	pop af
@@ -235,12 +230,6 @@ UpdateHPBar_PrintHPNumber:
 	ld a, [wHPBarType]
 	and a
 	jr z, .done ; don't print number in enemy HUD
-	cp $2
-	jr nz, .vanilla
-	ld a, [wIsInBattle]
-	and a
-	jr nz, .done ; don't print number on our mini-bar
-.vanilla
 ; convert from little-endian to big-endian for PrintNumber
 	ld a, [wHPBarOldHP]
 	ld [wHPBarTempHP + 1], a

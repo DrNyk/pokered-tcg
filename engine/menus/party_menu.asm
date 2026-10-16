@@ -333,19 +333,7 @@ SetPartyMenuHPBarColor:
 	ld c, a
 	ld b, 0
 	add hl, bc
-	ld a, $2
-	cp d
-	ld b, b
-	jr nz, .vanilla
-	;call GetHealthBarColor2
-	;jr .vanillaskip
-	ld a, e
-	add e
-	add e
-	ld e, a ; our short bar when in battle is 1/3rd the normal length, so we triple it. The GetHealthBarColor function does a `ld a, e` to start.
-.vanilla
 	call GetHealthBarColor
-;.vanillaskip
 	ld b, SET_PAL_PARTY_MENU_HP_BARS
 	call RunPaletteCommand
 	ld hl, wWhichPartyMenuHPBar
