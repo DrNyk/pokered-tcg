@@ -21,16 +21,7 @@ DrawHP_:
 	xor a
 	ld c, a
 	ld e, a
-	ld a, [wHPBarType]
-	cp $2
-	ld a, $6 ; tile length of the hp bar
-	jr nz, .vanilla_length
-	ld a, [wIsInBattle]
-	and a
 	ld a, $6
-	jr z, .vanilla_length ; we're not in a battle
-	ld a, $2
-.vanilla_length
 	ld d, a
 	jp .drawHPBarAndPrintFraction
 .nonzeroHP
@@ -39,16 +30,7 @@ DrawHP_:
 	ld a, [wLoadedMonMaxHP + 1]
 	ld e, a
 	predef HPBarLength
-	ld a, [wHPBarType]
-	cp $2
 	ld a, $6
-	jr nz, .vanilla_length2
-	ld a, [wIsInBattle]
-	and a
-	ld a, $6
-	jr z, .vanilla_length2 ; we're not in a battle
-	ld a, $2
-.vanilla_length2
 	ld d, a
 	ld c, a
 .drawHPBarAndPrintFraction
@@ -56,15 +38,29 @@ DrawHP_:
 	push de
 	push hl
 	push hl
-	call DrawHPBar
-	pop hl
 	ld a, [wHPBarType]
 	cp $2
-	jr nz, .vanilla ; we don't have any numbers to print if it's wHPBarType = 2 AND if we're in battle
+	jr nz, .vanilla
 	ld a, [wIsInBattle]
 	and a
-	jr nz, .earlyExit ; we're in a battle
+	jr z, .vanilla
+	ld d, $2 ; otherwise we're drawing 2 tiles and e needs to be scaled to 1/3rd
+	ld a, e
+	ldh [hDividend], a
+	ld b, 1
+	ld a, 3
+	ldh [hDivisor], a
+	call Divide
+	ldh a, [hQuotient + 3]
+	push de
+	ld e, a
+	call DrawHPBar
+	pop de
+	pop hl
+	jr .earlyexit
 .vanilla
+	call DrawHPBar
+	pop hl
 	ldh a, [hUILayoutFlags]
 	bit BIT_PARTY_MENU_HP_BAR, a
 	jr z, .printFractionBelowBar
@@ -82,7 +78,7 @@ DrawHP_:
 	ld de, wLoadedMonMaxHP
 	lb bc, 2, 3
 	call PrintNumber
-	.earlyExit
+.earlyexit
 	pop hl
 	pop de
 	ret
