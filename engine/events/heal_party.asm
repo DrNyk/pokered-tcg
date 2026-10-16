@@ -30,9 +30,11 @@ HealParty:
 	ld d, h
 	ld e, l
 	pop hl
-	ld a, [wTempByteValue] ; this is set to 1 if player wants just their lead to be healed, and set to zero for the whole team to be healed
-	and a
-	jr z, .healmon
+	;ld a, [wTempByteValue] ; this is set to 1 if player wants just their lead to be healed, and set to zero for the whole team to be healed
+	;and a
+	ld a, [wOptions]
+	bit BIT_NURSEJOY_TARGET, a ; parity with `and 1 << BIT_NURSEJOY_TARGET`
+	jr z, .healmon ; if the bit is on, that means we are doing just the lead, and should fall through. If the bit is zero, then we want the full party, so redo the loop.
 	
 .done
 	xor a

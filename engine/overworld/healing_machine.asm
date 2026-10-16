@@ -24,12 +24,13 @@ AnimateHealingMachine:
 	ld a, [wAudioFadeOutControl]
 	and a ; is fade-out finished?
 	jr nz, .waitLoop ; if not, check again
+	ld a, [wOptions]
+	bit BIT_NURSEJOY_TARGET, a
 	ld a, [wPartyCount]
+	jr z, .assignB ; if the bit test is zero, that means default to full team to be healed
+	ld a, 1 ; otherwise, a is 1 and we want just our lead Pokemon healed
+.assignB
 	ld b, a
-	ld a, [wTempByteValue] ; either of value 0 or 1
-	and a
-	jr z, .partyLoop ; if it's zero, we want the full party healed
-	ld b, a ; otherwise, a is 1 and we want just our lead Pokemon healed
 .partyLoop
 	call CopyHealingMachineOAM
 	ld a, SFX_HEALING_MACHINE

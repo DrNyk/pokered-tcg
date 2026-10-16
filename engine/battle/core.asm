@@ -3331,6 +3331,8 @@ PrintMenuItem:
 	ld [hl], '/'
 	inc hl
 	ld [hli], a
+	inc hl ; space between type and category ; OPTIONAL LINE IF TIGHT ON BYTES
+	inc hl ; second space
 	ld a, [wPlayerMoveType]
 	and $88 ; strip to just the bits controlling physical or not
 	cp $80

@@ -445,24 +445,31 @@ DisplayOptionMenu:
 	ld b, 3
 	ld c, 18
 	call TextBoxBorder
-	hlcoord 0, 5
+	hlcoord 0, 4
 	ld b, 3
 	ld c, 18
 	call TextBoxBorder
-	hlcoord 0, 10
+	hlcoord 0, 8
+	ld b, 3
+	ld c, 18
+	call TextBoxBorder
+	hlcoord 0, 12
 	ld b, 3
 	ld c, 18
 	call TextBoxBorder
 	hlcoord 1, 1
 	ld de, TextSpeedOptionText
 	call PlaceString
-	hlcoord 1, 6
+	hlcoord 1, 5
 	ld de, BattleAnimationOptionText
 	call PlaceString
-	hlcoord 1, 11
+	hlcoord 1, 9
 	ld de, BattleStyleOptionText
 	call PlaceString
-	hlcoord 2, 16
+	hlcoord 1, 13
+	ld de, NurseJoyOptionText
+	call PlaceString
+	hlcoord 2, 17
 	ld de, OptionMenuCancelText
 	call PlaceString
 	xor a
@@ -497,7 +504,7 @@ DisplayOptionMenu:
 	jr z, .checkDirectionKeys
 ; A was pressed
 	ld a, [wTopMenuItemY]
-	cp 16 ; is the cursor on Cancel?
+	cp 17 ; is the cursor on Cancel?
 	jr nz, .loop
 .exitMenu
 	ld a, SFX_PRESS_AB
@@ -513,44 +520,52 @@ DisplayOptionMenu:
 	jr nz, .downPressed
 	bit B_PAD_UP, b
 	jr nz, .upPressed
-	cp 8 ; cursor in Battle Animation section?
+	cp 7 ; cursor in Battle Animation section?
 	jr z, .cursorInBattleAnimation
-	cp 13 ; cursor in Battle Style section?
+	cp 11 ; cursor in Battle Style section?
 	jr z, .cursorInBattleStyle
-	cp 16 ; cursor on Cancel?
+	cp 15 ; cursor in Nurse Joy section?
+	jr z, .cursorInNurseJoy
+	cp 17 ; cursor on Cancel?
 	jr z, .loop
 ; cursor in Text Speed
 	bit B_PAD_LEFT, b
 	jp nz, .pressedLeftInTextSpeed
 	jp .pressedRightInTextSpeed
 .downPressed
-	cp 16
-	ld b, -13
+	cp 17
+	ld b, -14
 	ld hl, wOptionsTextSpeedCursorX
 	jr z, .updateMenuVariables
-	ld b, 5
+	ld b, 4
 	cp 3
 	inc hl
 	jr z, .updateMenuVariables
-	cp 8
+	cp 7
 	inc hl
 	jr z, .updateMenuVariables
-	ld b, 3
+	cp 11
+	inc hl
+	jr z, .updateMenuVariables
+	ld b, 2
 	inc hl
 	jr .updateMenuVariables
 .upPressed
-	cp 8
-	ld b, -5
+	cp 7
+	ld b, -4
 	ld hl, wOptionsTextSpeedCursorX
 	jr z, .updateMenuVariables
-	cp 13
+	cp 11
 	inc hl
 	jr z, .updateMenuVariables
-	cp 16
-	ld b, -3
+	cp 15
 	inc hl
 	jr z, .updateMenuVariables
-	ld b, 13
+	cp 17
+	ld b, -2
+	inc hl
+	jr z, .updateMenuVariables
+	ld b, 14
 	inc hl
 .updateMenuVariables
 	add b
@@ -568,6 +583,11 @@ DisplayOptionMenu:
 	ld a, [wOptionsBattleStyleCursorX] ; battle style cursor X coordinate
 	xor 1 ^ 10 ; toggle between 1 and 10
 	ld [wOptionsBattleStyleCursorX], a
+	jp .eraseOldMenuCursor
+.cursorInNurseJoy
+	ld a, [wOptionsNurseJoyCursorX]
+	xor 1 ^ 10
+	ld [wOptionsNurseJoyCursorX], a
 	jp .eraseOldMenuCursor
 .pressedLeftInTextSpeed
 	ld a, [wOptionsTextSpeedCursorX] ; text speed cursor X coordinate
@@ -605,6 +625,10 @@ BattleAnimationOptionText:
 BattleStyleOptionText:
 	db   "ENERGY STYLE"
 	next " CHOOSE   ACTIVE@"
+	
+NurseJoyOptionText:
+	db	"NURSE JOY HEALS"
+	next " ALL      LEAD@"
 
 OptionMenuCancelText:
 	db "CANCEL@"
@@ -637,9 +661,17 @@ SetOptionsFromCursorPositions:
 	jr z, .battleStyleShift
 ; battle style Set
 	set BIT_BATTLE_SHIFT, d
-	jr .storeOptions
+	jr .checkNurseJoy
 .battleStyleShift
 	res BIT_BATTLE_SHIFT, d
+.checkNurseJoy
+	ld a, [wOptionsNurseJoyCursorX]
+	dec a
+	jr z, .HealAll
+	set BIT_NURSEJOY_TARGET, d
+	jr .storeOptions
+.HealAll
+	res BIT_NURSEJOY_TARGET, d
 .storeOptions
 	ld a, d
 	ld [wOptions], a
@@ -650,7 +682,7 @@ SetCursorPositionsFromOptions:
 	ld hl, TextSpeedOptionData + 1
 	ld a, [wOptions]
 	ld c, a
-	and $3f
+	and $1f ; was $3f to ignogre the top 2 bits, 6 = BIT_BATTLE_SHIFT and 7 = BIT_BATTLE_ANIMATION. Added 5 = BIT_NURSEJOY_TARGET
 	push bc
 	ld de, 2
 	call IsInArray
@@ -666,7 +698,7 @@ SetCursorPositionsFromOptions:
 	ld a, 10 ; Off
 .storeBattleAnimationCursorX
 	ld [wOptionsBattleAnimCursorX], a ; battle animation cursor X coordinate
-	hlcoord 0, 8
+	hlcoord 0, 7
 	call .placeUnfilledRightArrow
 	sla c
 	ld a, 1
@@ -674,10 +706,18 @@ SetCursorPositionsFromOptions:
 	ld a, 10
 .storeBattleStyleCursorX
 	ld [wOptionsBattleStyleCursorX], a ; battle style cursor X coordinate
-	hlcoord 0, 13
+	hlcoord 0, 11
+	call .placeUnfilledRightArrow
+	sla c
+	ld a, 1
+	jr nc, .storeNurseJoyCursorX
+	ld a, 10
+.storeNurseJoyCursorX
+	ld [wOptionsNurseJoyCursorX], a
+	hlcoord 0, 15
 	call .placeUnfilledRightArrow
 ; cursor in front of Cancel
-	hlcoord 0, 16
+	hlcoord 0, 17
 	ld a, 1
 .placeUnfilledRightArrow
 	ld e, a

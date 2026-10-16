@@ -333,15 +333,19 @@ SetPartyMenuHPBarColor:
 	ld c, a
 	ld b, 0
 	add hl, bc
-	ld a, [wIsInBattle]
-	and a
+	ld a, $2
+	cp d
 	ld b, b
-	jr z, .vanilla
-	call GetHealthBarColor2
-	jr .vanillaskip
+	jr nz, .vanilla
+	;call GetHealthBarColor2
+	;jr .vanillaskip
+	ld a, e
+	add e
+	add e
+	ld e, a ; our short bar when in battle is 1/3rd the normal length, so we triple it. The GetHealthBarColor function does a `ld a, e` to start.
 .vanilla
 	call GetHealthBarColor
-.vanillaskip
+;.vanillaskip
 	ld b, SET_PAL_PARTY_MENU_HP_BARS
 	call RunPaletteCommand
 	ld hl, wWhichPartyMenuHPBar
@@ -391,21 +395,23 @@ PrintEnergyRow:
 	pop bc
 	ret
 	
-GetHealthBarColor2:
-; Return at hl the palette of
-; an HP bar e pixels long.
-; a normal hp bar is 48 pixels long (6 tiles)
-; I have my shortking at 16 pixels long (2 tiles)
-	ld a, e
-	add e ; trying to triple e back to how it acts like it's a 6-tile hp bar, not sure if this will work for precision against the cp 10 that isn't divisible by 3, but, whatever.
-	add e
-	cp 27 ; originally 27
-	ld d, 0 ; green
-	jr nc, .gotColor
-	cp 10 ; originally 10, doesn't divide 3 perfectly
-	inc d ; yellow
-	jr nc, .gotColor
-	inc d ; red
-.gotColor
-	ld [hl], d
-	ret
+; GetHealthBarColor2:
+; ; Return at hl the palette of
+; ; an HP bar e pixels long.
+; ; a normal hp bar is 48 pixels long (6 tiles)
+; ; I have my shortking at 16 pixels long (2 tiles)
+	; ld a, e
+	; add e ; trying to triple e back to how it acts like it's a 6-tile hp bar, not sure if this will work for precision against the cp 10 that isn't divisible by 3, but, whatever.
+	; add e
+	; cp 27 ; originally 27
+	; ld d, 0 ; green
+	; jr nc, .gotColor
+	; cp 10 ; originally 10, doesn't divide 3 perfectly
+	; ; there's a flaw against the precision. I'm basically saying the # of pixels I can have on shortking is pretend 3, 6, 9, 12, etc.
+	; ; if the normal value is 10/48, my shortking is 3.333/16, which was truncated to 3, then I actually triple it ot 9/48. That would result in a red on the shortking, but yellow on the vanilla.
+	; inc d ; yellow
+	; jr nc, .gotColor
+	; inc d ; red
+; .gotColor
+	; ld [hl], d
+	; ret

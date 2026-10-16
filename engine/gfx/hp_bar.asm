@@ -302,13 +302,3 @@ UpdateHPBar_CalcOldNewHPBarPixels:
 	ld e, a
 	pop hl
 	ret
-
-	; ld a, [wHPBarType]
-	; cp $2
-	; jr nz, .vanilla
-	; ld a, [wIsInBattle]
-	; and a
-	; jr z, .vanilla
-	; ld de, $D
-	; jr .next
-; .vanilla

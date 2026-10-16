@@ -277,6 +277,11 @@ _AttachedToActiveText::
 _AllOrLeadText::
 	text "Which #MON"
 	line "shall we treat?"
+	para "I'll remember"
+	line "your choice for"
+	para "future reference."
+	line "You can change"
+	cont "it in settings."
 	done
 	
 _PokemonFightingFitTextSingular::

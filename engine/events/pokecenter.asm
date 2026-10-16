@@ -7,20 +7,23 @@ DisplayPokemonCenterDialogue_::
 	set BIT_UNKNOWN_4_1, [hl]
 	set BIT_USED_POKECENTER, [hl]
 	jr nz, .skipShallWeHealYourPokemon
-	ld hl, ShallWeHealYourPokemonText
+	ld hl, HowManyPokemonToHeal
 	call PrintText
+	call YesNoChoicePokeCenter2
+	ld hl, wOptions
+	ld a, [wCurrentMenuItem]
+	and a
+	res BIT_NURSEJOY_TARGET, [hl]
+	jr z, .ForceFirstHeal ; in the yes position
+	set BIT_NURSEJOY_TARGET, [hl]
+	jr .ForceFirstHeal
 .skipShallWeHealYourPokemon
 	call YesNoChoicePokeCenter ; yes/no menu
 	ld a, [wCurrentMenuItem]
 	and a
 	jr nz, .declinedHealing ; if the player chose No
+.ForceFirstHeal
 	call SetLastBlackoutMap
-	ld hl, HowManyPokemonToHeal
-	call PrintText
-	call YesNoChoicePokeCenter2 ; all or lead
-	ld a, [wCurrentMenuItem]
-	and a
-	ld [wTempByteValue], a ; if it's 1, we want just the lead
 	call LoadScreenTilesFromBuffer1 ; restore screen
 	ld hl, NeedYourPokemonText
 	call PrintText
