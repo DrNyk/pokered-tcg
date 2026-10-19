@@ -3,7 +3,7 @@
 	db  95, 125,  79,  81, 100
 	;   hp  atk  def  spd  spc
 
-	tcgtype 3, WATER, GRASS, FIGHTING
+	tcgtype 3, WATER, LIGHTNING, FIGHTING ; a TCG card used Grass weakness here, but man, it feels wrong.
 	db 45 ; catch rate
 	db 214 ; base exp
 
