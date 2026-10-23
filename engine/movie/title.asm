@@ -414,4 +414,4 @@ DebugNewGamePlayerName:
 	db "NINTEN@"
 
 DebugNewGameRivalName:
-	db "SONY@"
+	db $C3,"ONY@"

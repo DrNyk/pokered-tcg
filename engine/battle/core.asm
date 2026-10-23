@@ -3353,205 +3353,179 @@ PrintMenuItem:
 	;and $07
 	;ld b, a ; cache this type ; it's not cached earlier because PlaceString butchers it
 	;add $BF
-	ld a, b
-	add $BF
 	ld hl, wPlayerBattleStatus3
 	bit TRANSFORMED, [hl]
-	jr z, .nottransformed2
-	ld a, '!'
-.nottransformed2
-	hlcoord 1, 11
-	ld [hli], a ; I just printed the first energy requirement
-	; now I need how much of that PP I have
-	jp nz, .transformedPrint
-	ld a, b
-	sra a ; value of 0111 (7) -> 011 (3); 0110 (6) -> 011 (3); 0101 (5) -> 010 (2); 0100 (4) -> 010 (2); 0011 (3) -> 001 (1) ; 0010 (2) -> 001 (1) ... and all the ODD values set the carry flag
-	;push af
-	jr nz, .coloredAttack
-	; this block executes when it's colorless
-	push hl
 	ld hl, wBattleMonPP
-	call ColorLessEnergyCheck ; we'll get the total sum of energy we have right now
-	; but I have to deduct the energy requirement of the other type if there is any
-	pop hl
-	ld [wTempByteValue], a ; total energy is great
-	inc hl ; compensates for the [hli] just before we re-enter at .PrimaryIsColorless
-	;pop af ; restore the flags from before
-	;ld a, [wTempByteValue] ; but keep our active a
-	jr .PrimaryIsColorless ; this branch needs us to evaluate what the secondary is because if it's typed like Sky Attack we need to deduct that energy before we print this one
-.coloredAttack
-	;pop af
-	ld de, wBattleMonPP - 1
-.keepdecreasinga
-	inc de
-	dec a ; doesn't affect the carry flag
-	jr nz, .keepdecreasinga
-	; now it's on wBattleMonPP + 0/1/2 depending on which one we need
-	ld a, [de]
-	jr c, .noswap ; from way back on the sra a above (restored by the pop af ~10 lines above)
-	swap a
-.noswap
-	and $0F ; this is how much PP I have for the type
-	ld c, a ; caching this in c
-	add $F6 ; get the single-digit character
-	ld [hli], a
-.PrimaryIsColorless
+	jr z, .nottransformed2
+	; do this if TRANSFORMED
+	call ColorLessEnergyCheck
+	ld de, wTempByteValue
+	ld [de], a
+	lb bc, 1, 2 ; prints a 2-digit number skipping lead zeroes
+	push de
+	call PrintNumber ; butchers de
 	ld [hl], '/'
 	inc hl
-	ld a, [wPlayerMoveMaxPP] ; we're doing pp1
+	ld a, [wPlayerMoveMaxPP] ; this gets the pp1|pp2 of our attack in question
+	ld b, a
+	swap a
+	add b ; this gets us to pp1+pp2|pp1+p22
+	and $0F ; take just the lower nibble for pp1+pp2
+	;ld de, wTempByteValue
+	pop de
+	ld [de], a
+	lb bc, %01000001, 2 ; prints a 2-digit number left-aligned to the / skipping lead zeroes
+	call PrintNumber
+	xor a
+	jr .prepareToExit
+.nottransformed2
+	call ColorLessEnergyCheck
+	ld d, a ; stash total energy here
+	;ld hl, wPlayerMoveType
+	;ld a, [hl]
+	;and $07
+	;ld b, a ; my primary type value ; from earlier b is already set up this way
+	ld a, [wPlayerMoveType]
+	and $70
+	ld [wTempByteValue], a ; if this is zero, we know it has no secondary type and we use this to decide to skip printing a second type later
+	swap a
+	ld c, a ; my secondary type value
+	dec b ; I dec my primary type
+	ld e, d ; pretend we want the total energy for now
+	jr z, .primarycolorless
+	;ld hl, wBattleMonPP
+	ld a, b ; this count is 1-6, because we dec b'd so b couldn't be zero
+	call .srlAProgress
+	ld e, a ; so colored primary pp is here
+.primarycolorless ; so e is saved for primary pp
+	dec c ; I dec my secondary type, so now insted of 1-7 it's 0-6.
+	; ld d, d ; we'll have d be secondary pp here, and wouldn't you know it, if secondary is colorless, we already have our total energy (which is partial duplicate of the primary coloration)
+	jr z, .secondarycolorless
+	ld a, c
+	call .srlAProgress
+	ld d, a
+.secondarycolorless
+	ld h, e ; that primary PP is stored in h now
+	ld a, [wPlayerMoveMaxPP]
 	and $F0
 	swap a
-	add $F6
-	ld [hli], a
-	inc hl ; double increse the hl to do padding
-	ld a, [wPlayerMoveType]
-	and $70
-	jr z, .noSecondType ; skip the rest of the checking for a second type
-	swap a
-	ld b, a ; cache this type
-	add $BF
-	ld [hli], a
-	ld a, b
-	sra a
-	ld de, wBattleMonPP - 1
-	jr nz, .coloredAttack2
-	push hl
-	ld hl, wBattleMonPP
-	call ColorLessEnergyCheck
-	ld [wTempByteValue], a ; why not cache this here with how much total energy we have
-	pop hl
-	sub c ; this was our first attack's energy requirements
-	jr nc, .zeroOrMoreColorlessEnergyInExcess
-	xor a ; if it carries, that means we have no excess energy so just zero it out rather than negative
-	jr .noswap2
-.coloredAttack2
-.keepdecreasinga2
-	inc de
-	dec a
-	jr nz, .keepdecreasinga2
-	ld a, [de]
-	jr c, .noswap2
-	swap a
-	jr .noswap2
-.zeroOrMoreColorlessEnergyInExcess
-	; in here, a holds the secondary colorless energy beyond what's required for the primary type
-	cp 10
-	jr c, .noswap2 ; it looks good as a single digit
-	ld c, $F5 ; we can use c as a counter I think. I start at "-1" in glyph speak.
-.keepSubtracting
-	sub 10
-	inc c ; never adjusts the carry flag. It increases to $F6 = "0" glyph on the first pass.
-	jr nc, .keepSubtracting
-	; fall through here when we've gone too far
-	add 10 ; go from negative back to a positive value for the ones-digit in a
-	; we could have double-digit excess energy here. I want to print that for secondary type.
-	dec hl
-	ld b, [hl] ; take the type icon
-	dec hl
-	ld [hl], b ; shift it here
-	inc hl
-	ld [hl], c ; put the tens-digit glyph in this spot
-	inc hl ; now we can fall through down here
-.noswap2
+	ld l, a ; primary pp requirements
+	ld a, [wPlayerMoveMaxPP]
 	and $0F
-	add $F6
+	ld e, a ; secondary pp requirements
+
+	; b = primary type
+	; c = secondary type
+	; h = primary energy in possession
+	; l = primary energy required
+	; d = secondary energy in possesion
+	; e = secondary energy required
+
+	; the problem to fix is, if either is colorless in a two-pp set up, the colorless is counting that colored pp and it needs to allocate separately. So we remove that colored PP entirely, so colorless is sum of the other 5 types.
+
+	ld a, [wTempByteValue]
+	and a
+	jr z, .printnow ; there's only one type to print, no borrowing to do, just go print
+	ld a, b ; dec'd so it's now 0-6 scale
+	and a
+	jr z, .primaryiscolorless
+	ld a, c
+	and a
+	jr z, .secondaryiscolorless
+
+.printnow
+	ld a, h
+	ld [wEnergyStringBuffer], a
+	ld a, l
+	ld [wEnergyStringBuffer+1], a
+	hlcoord 1, 11
+	ld a, b
+.interjection
+	add $C0 ; glyph
+	ld [hli], a
+	ld a, [wEnergyStringBuffer]
+	cp 10
+	jr c, .onesDigits
+	ld b, $F6 ; "0" glyph
+.loop
+	inc b
+	sub 10
+	jr nc, .loop
+	add 10 ; fall through here when we went negative, so restore that
+	ld [hl], b ; already in glyph format, this prints the 10s digit
+	inc hl
+.onesDigits
+	add $F6 ; "0" glyph
 	ld [hli], a
 	ld [hl], '/'
 	inc hl
-	ld a, [wPlayerMoveMaxPP]
-	and $0f
-	add $F6
-	ld [hl], a
-	; If we have two colored types, they're done. It's if colorless was the first type it didn't actually print something. So this is all in support of Sky-Attack logic
-	push hl
-	hlcoord 2, 11
-	ld a, ' '
-	cp [hl]
-	pop hl
-	jr nz, .prepareToExit ; if we filled something in on this tile, then it must have been a primary color attack
-.noSecondType ; when we return here, we want to pick up the total energy from the colorlesscheck
-	;ld a, [wTempByteValue] ; restore from the colorlesscheck
-	;and a
-	;jr z, .prepareToExit ; if wTempByteValue is zero, then I did not use ColorlessEnergyCheck because it was a colored attack. I have printed what I need. Except maybe Sky-Attack is borked. We'll see. But in any other case, it shouldn't print 0 on a colored energy page unless it's the wrong energy... so zeroes could be necessary. Hmm... Sky Attack is going to mess with me.
-; this means we saw type1 is colorless, and type2 is probably null but could be fire due to sky attack
-	ld a, [wPlayerMoveType]
-	and $70
-	jr nz, .alternativeType2
-	ld a, [wPlayerMoveType]
-	and $07
-	dec a
+	ld a, [wEnergyStringBuffer+1]
+	add $F6 ; "0" glyph
+	ld [hli], a
 	ld a, [wTempByteValue]
-	; so there was just one type the entire time
-	jr z, .printCurrentEnergyAgain ; skip this alternativeType2 stuff and just print the only colorless
-	jr .prepareToExit ; really means we want to get to the end is all
-.alternativeType2
-	; I think I need the minimum of the sky-attack typing. What I mean is, if I have no fire energy, but have multiple other energies, that needs to count to the colorless requirements. So I can't sub off the cost of a fire energy necessarily.
-	ld c, [hl] ; this is the cost of the second PP, in glyph offset
-	dec hl
-	dec hl
-	ld a, [hl] ; this is my current energy of that second type, in glyph offset
-	cp c ; pretend 2 - 1 results in nc, so use 
-	jr c, .cIsLargerSoUseA
-	ld a, c
-.cIsLargerSoUseA
-	; whethere we use original a or c-overwrites-a, we need to get [wTempByteValue] and subtract whatever it may be
-	sub $F6
-	ld b, a ; cache the value to sub from wTempByteValue real quick
-	ld a, [wTempByteValue]
-	sub b
-.printCurrentEnergyAgain
-; when we get to here. I'm trying to print the value of Type 1's energy, which if I got this far may well be colorless stuff cause I had to math it around. 
-	hlcoord 2, 11
-	cp 10 ; check a against the value of 10. If it carries, we have a single-digit PP to print, which is normal
-	jr c, .singledigitPP1
-	ld c, $F5
-.keepSubtracting2
-	sub 10 ; remove 10 from the value a
-	inc c
-	jr nc, .keepSubtracting2
-	add 10 ; we went too far, let's tack the 10 back on there to go from negative to 0-9 again in a
-	; fall through here when we've gone too far
-	; hl is pointing at a blank right now
-	ld [hl], c ; print the tens-digit
-	inc hl ; now points to where the '/' is right now
-	ld b, [hl]
-	inc hl
-	ld c, [hl] ; the denominator
-	ld [hl], b ; print the '/' to overwrite that
-	inc hl
-	ld [hl], c ; print the denominator where there was a blank
-	dec hl
-	dec hl ; now point the hl to where the ones-digit should go, where the '/' originally was
-.singledigitPP1
-	add $F6 ; re-add the $F6 for printable character
-	ld [hl], a
-	; fall through
+	and a
+	jr nz, .nexttype ; done printing, is it really a ret here or a jp?  #############
+	; do I print a gap? If both single digit numerators, yes, I need a gap
 .prepareToExit
-	ld a, $1
+	inc a ; a goes from 0 to 1 save a byte
 	ldh [hAutoBGTransferEnabled], a
 	jp Delay3
-	
-.transformedPrint
-push hl ; this is currently pointing to the numerical value of how much colorless energy I will have
-ld hl, wBattleMonPP
-call ColorLessEnergyCheck
-pop hl
-ld de, wTempByteValue
-ld [de], a
-lb bc, 1, 2 ; prints a 2-digit number skipping lead zeroes
-call PrintNumber
-ld [hl], '/'
-inc hl
-ld a, [wPlayerMoveMaxPP] ; this gets the pp1|pp2 of our attack in question
-ld b, a
-swap a
-add b ; this gets us to pp1+pp2|pp1+p22
-and $0F ; take just the lower nibble for pp1+pp2
-ld de, wTempByteValue
-ld [de], a
-lb bc, %01000001, 2 ; prints a 2-digit number left-aligned to the / skipping lead zeroes
-call PrintNumber
-jr .prepareToExit
+.nexttype
+	xor a
+	ld [wTempByteValue], a ; so next time around, after printing second type info, it will see we're done printing
+	ld a, [wEnergyStringBuffer] ; this time around, it's primary type numerator
+	cp 10
+	ld a, d
+	jr nc, .nogap
+	cp 10
+	jr nc, .nogap
+	inc hl
+.nogap
+	ld [wEnergyStringBuffer], a
+	ld a, e
+	ld [wEnergyStringBuffer+1], a
+	ld a, c
+	jr .interjection
+.srlAProgress
+	dec a ; now it's 0-5 reeady to identify the colored PP.
+	push hl
+	call srlAAndIncrementPPByteOffset
+	ld a, [hl]
+	pop hl
+	jr c, .noswap
+	swap a
+.noswap
+	and $0f
+	ret
+.primaryiscolorless
+	; so long as d > e, and h < l, we need to borrow one at a time
+	ld a, h ; h is total energy as colorless
+	sub d ; secondary type I have
+	ld h, a ; we subbed off that total energy
+.loopP
+	ld a, h
+	cp l ; h - l
+	jr nc, .printnow
+	ld a, e
+	cp d ; e - d
+	jr nc, .printnow
+	inc h
+	dec d ; this is the borrow
+	jr .loopP
+.secondaryiscolorless
+	ld a, d
+	sub h
+	ld d, a
+.loopS
+	ld a, d
+	cp e ; d - e
+	jr nc, .printnow
+	ld a, l
+	cp h ; l - h
+	jr nc, .printnow
+	inc d
+	dec h
+	jr .loopS
 
 DisabledText:
 	db "disabled!@"
