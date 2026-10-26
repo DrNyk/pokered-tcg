@@ -8,7 +8,7 @@ ENDC
 IF DEF(_PURPLE)
 	INCBIN "gfx/title/purple_version8.1bpp" ; 8 ~~10~~ tiles
 ENDC
-IF DEF(_MAGNETNA)
+IF DEF(_MAGENTA)
 	INCBIN "gfx/title/magenta_version8.1bpp" ; 8 ~~10~~ tiles
 ENDC
 Version_GFXEnd:
