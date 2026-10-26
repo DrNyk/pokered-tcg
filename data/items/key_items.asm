@@ -30,7 +30,7 @@ KeyItemFlags:
 	dbit TRUE  ; EARTHBADGE
 	dbit FALSE ; ESCAPE_ROPE
 	dbit FALSE ; REPEL
-	dbit TRUE  ; OLD_AMBER
+	dbit FALSE  ; OLD_AMBER
 	dbit FALSE ; FIRE_STONE
 	dbit FALSE ; THUNDER_STONE
 	dbit FALSE ; WATER_STONE
@@ -40,8 +40,8 @@ KeyItemFlags:
 	dbit FALSE ; CARBOS
 	dbit FALSE ; CALCIUM
 	dbit FALSE ; RARE_CANDY
-	dbit TRUE  ; DOME_FOSSIL
-	dbit TRUE  ; HELIX_FOSSIL
+	dbit FALSE  ; DOME_FOSSIL
+	dbit FALSE  ; HELIX_FOSSIL
 	dbit TRUE  ; SECRET_KEY
 	dbit TRUE  ; ITEM_2C
 	dbit TRUE  ; BIKE_VOUCHER

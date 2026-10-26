@@ -465,6 +465,24 @@ FightIntroFrontMon3:
 	INCBIN "gfx/intro/blue_jigglypuff_3.2bpp"
 ENDC
 
+IF DEF(_PURPLE)
+FightIntroFrontMon:
+	INCBIN "gfx/intro/blue_jigglypuff_1.2bpp"
+FightIntroFrontMon2:
+	INCBIN "gfx/intro/blue_jigglypuff_2.2bpp"
+FightIntroFrontMon3:
+	INCBIN "gfx/intro/blue_jigglypuff_3.2bpp"
+ENDC
+
+IF DEF(_MAGENTA)
+FightIntroFrontMon:
+	INCBIN "gfx/intro/blue_jigglypuff_1.2bpp"
+FightIntroFrontMon2:
+	INCBIN "gfx/intro/blue_jigglypuff_2.2bpp"
+FightIntroFrontMon3:
+	INCBIN "gfx/intro/blue_jigglypuff_3.2bpp"
+ENDC
+
 FightIntroFrontMonEnd:
 
 	ds 16, $00 ; blank tile

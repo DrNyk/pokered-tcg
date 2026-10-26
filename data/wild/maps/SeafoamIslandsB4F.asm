@@ -22,6 +22,28 @@ IF DEF(_BLUE)
 	db 29, SEEL
 	db 39, GOLDUCK
 ENDC
+IF DEF(_PURPLE)
+	db 31, KRABBY
+	db 31, STARYU
+	db 33, HORSEA
+	db 33, SHELLDER
+	db 29, PSYDUCK
+	db 31, SEEL
+	db 31, SLOWPOKE
+	db 29, SEEL
+	db 39, GOLDUCK
+ENDC
+IF DEF(_MAGENTA)
+	db 31, KRABBY
+	db 31, STARYU
+	db 33, HORSEA
+	db 33, SHELLDER
+	db 29, PSYDUCK
+	db 31, SEEL
+	db 31, SLOWPOKE
+	db 29, SEEL
+	db 39, GOLDUCK
+ENDC
 	db 32, GOLBAT
 	end_grass_wildmons
 

@@ -23,6 +23,28 @@ IF DEF(_BLUE)
 	db  3, NIDORAN_M
 	db  4, NIDORAN_M
 ENDC
+IF DEF(_PURPLE)
+	db  3, NIDORAN_F
+	db  4, RATTATA
+	db  3, NIDORAN_M
+	db  2, RATTATA
+	db  2, NIDORAN_F
+	db  3, SPEAROW
+	db  5, SPEAROW
+	db  4, NIDORAN_M
+	db  4, NIDORAN_F
+ENDC
+IF DEF(_MAGENTA)
+	db  3, NIDORAN_F
+	db  4, RATTATA
+	db  3, NIDORAN_M
+	db  2, RATTATA
+	db  2, NIDORAN_F
+	db  3, SPEAROW
+	db  5, SPEAROW
+	db  4, NIDORAN_M
+	db  4, NIDORAN_F
+ENDC
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

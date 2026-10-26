@@ -21,6 +21,24 @@ IF DEF(_BLUE)
 	db  8, SANDSHREW
 	db 12, SANDSHREW
 ENDC
+IF DEF(_PURPLE)
+	db  6, EKANS
+	db  8, SPEAROW
+	db 10, SANDSHREW
+	db 12, RATTATA
+	db 12, SPEAROW
+	db  8, SANDSHREW
+	db 12, EKANS
+ENDC
+IF DEF(_MAGENTA)
+	db  6, EKANS
+	db  8, SPEAROW
+	db 10, SANDSHREW
+	db 12, RATTATA
+	db 12, SPEAROW
+	db  8, SANDSHREW
+	db 12, EKANS
+ENDC
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

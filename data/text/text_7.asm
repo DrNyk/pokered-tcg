@@ -289,3 +289,21 @@ _PokemonFightingFitTextSingular::
 	line "Your #MON is"
 	cont "fighting fit!"
 	prompt
+	
+_WannaTrade4Text::
+	text "I'm the TRADER! I"
+	line "can trade your"
+	para "own #MON back"
+	line "to you."
+	para "Wanna trade?"
+	done
+	
+_NoTrade4Text::
+	text "OK, maybe next"
+	line "time then."
+	done
+	
+_Thanks4Text::
+	text "All done, I hope"
+	line "that helped."
+	done

@@ -22,6 +22,28 @@ IF DEF(_BLUE)
 	db 29, STARYU
 	db 39, KINGLER
 ENDC
+IF DEF(_PURPLE)
+	db 31, PSYDUCK
+	db 31, SEEL
+	db 33, SLOWPOKE
+	db 33, SEEL
+	db 29, KRABBY
+	db 31, STARYU
+	db 31, HORSEA
+	db 29, STARYU
+	db 39, KINGLER
+ENDC
+IF DEF(_MAGENTA)
+	db 31, PSYDUCK
+	db 31, SEEL
+	db 33, SLOWPOKE
+	db 33, SEEL
+	db 29, KRABBY
+	db 31, STARYU
+	db 31, HORSEA
+	db 29, STARYU
+	db 39, KINGLER
+ENDC
 	db 37, DEWGONG
 	end_grass_wildmons
 

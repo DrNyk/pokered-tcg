@@ -23,6 +23,28 @@ IF DEF(_BLUE)
 	db 15, VULPIX
 	db 18, VULPIX
 ENDC
+IF DEF(_PURPLE)
+	db 18, MANKEY
+	db 17, EKANS
+	db 16, GROWLITHE
+	db 20, PIDGEY
+	db 20, MEOWTH
+	db 19, SANDSHREW
+	db 17, VULPIX
+	db 15, VULPIX
+	db 18, GROWLITHE
+ENDC
+IF DEF(_MAGENTA)
+	db 18, MANKEY
+	db 17, EKANS
+	db 16, GROWLITHE
+	db 20, PIDGEY
+	db 20, MEOWTH
+	db 19, SANDSHREW
+	db 17, VULPIX
+	db 15, VULPIX
+	db 18, GROWLITHE
+ENDC
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

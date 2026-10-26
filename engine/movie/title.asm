@@ -129,6 +129,12 @@ ENDC
 IF DEF(_BLUE)
 	ld a, STARTER2 ; which Pokemon to show first on the title screen
 ENDC
+IF DEF(_PURPLE)
+	ld a, STARTER3
+ENDC
+IF DEF(_MAGENTA)
+	ld a, STARTER3
+ENDC
 	ld [wTitleMonSpecies], a
 	call LoadTitleMonSprite
 
@@ -405,10 +411,18 @@ PrintGameVersionOnTitleScreen:
 VersionOnTitleScreenText:
 IF DEF(_RED)
 	db $60,$61,$7F,$65,$66,$67,$68,$69,"@" ; "Red Version"
+ELSE
+	db $61,$62,$63,$64,$65,$66,$67,$68,"@" ; "Blue Version" / "Purple Version" / "Magenta Version"
 ENDC
-IF DEF(_BLUE)
-	db $61,$62,$63,$64,$65,$66,$67,$68,"@" ; "Blue Version"
-ENDC
+; IF DEF(_BLUE)
+	; db $61,$62,$63,$64,$65,$66,$67,$68,"@" ; "Blue Version"
+; ENDC
+; IF DEF(_PURPLE)
+	; db $61,$62,$63,$64,$65,$66,$67,$68,"@" ; Purple Version
+; ENDC
+; IF DEF(_MAGNETNA)
+	; db $61,$62,$63,$64,$65,$66,$67,$68,"@" ; Magenta Version
+; ENDC
 
 DebugNewGamePlayerName:
 	db "NINTEN@"

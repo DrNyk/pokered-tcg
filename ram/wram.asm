@@ -1676,24 +1676,32 @@ wStepCounter:: db
 ; after a battle, you have at least 3 steps before a random battle can occur
 wNumberOfNoRandomBattleStepsLeft:: db
 
-wPrize1:: db
-wPrize2:: db
-wPrize3:: db
+	;ds 4
 
-	ds 1
-
-; This union spans 17 bytes.
+; This union spans ~~17~~ 21 bytes.
 UNION
+ds 4
 wSerialRandomNumberListBlock:: ds $11
 
 NEXTU
 wPrize1Price:: dw
 wPrize2Price:: dw
 wPrize3Price:: dw
-
-	ds 1
+wPrize4Price:: dw
+wPrize5Price:: dw
+wPrize6Price:: dw
+wPrize1:: db
+wPrize2:: db
+wPrize3:: db
+wPrize4:: db
+wPrize5:: db
+wPrize6:: db
+	;ds 1
 
 ; shared list of 9 random numbers, indexed by wLinkBattleRandomNumberListIndex
+NEXTU
+ds 4 ; because I moved the union up, but am padding these out, as I basically captured wPrize1-3 + ds 1 space that was outside the union. Doing this so I have enough room for 6 (really 7) prizes. To use 7 prizes + Exit line, the vanilla box is already big enough, I just have to bump up each row of printing items to fill in the very top gap.
+ds 7 ; originally the wPrize1-3Price and a ds1 occupied this spot, but as I recycle, I recycle... 
 wLinkBattleRandomNumberList:: ds 10
 ENDU
 

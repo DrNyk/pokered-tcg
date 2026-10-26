@@ -891,4 +891,10 @@ ENDC
 IF DEF(_BLUE)
 	INCBIN "gfx/slots/blue_slots_1.2bpp"
 ENDC
+IF DEF(_PURPLE)
+	INCBIN "gfx/slots/blue_slots_1.2bpp"
+ENDC
+IF DEF(_MAGENTA)
+	INCBIN "gfx/slots/blue_slots_1.2bpp"
+ENDC
 SlotMachineTiles1End:

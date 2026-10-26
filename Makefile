@@ -1,7 +1,10 @@
 roms := \
 	pokered.gbc \
 	pokeblue.gbc \
-	pokeblue_debug.gbc
+	pokeblue_debug.gbc \
+	pokepurple.gbc \
+	pokepurple_debug.gbc \
+	pokemagenta.gbc
 patches := \
 	pokered.patch \
 	pokeblue.patch
@@ -22,6 +25,9 @@ pokeblue_obj       := $(rom_obj:.o=_blue.o)
 pokeblue_debug_obj := $(rom_obj:.o=_blue_debug.o)
 pokered_vc_obj     := $(rom_obj:.o=_red_vc.o)
 pokeblue_vc_obj    := $(rom_obj:.o=_blue_vc.o)
+pokepurple_obj        := $(rom_obj:.o=_purple.o)
+pokepurple_debug_obj := $(rom_obj:.o=_purple_debug.o)
+pokemagenta_obj       := $(rom_obj:.o=_magenta.o)
 
 
 ### Build tools
@@ -57,6 +63,9 @@ RGBGFXFLAGS  ?= -Weverything
 	blue_debug \
 	red_vc \
 	blue_vc \
+	purple \
+	purple_debug \
+	magenta \
 	clean \
 	tidy \
 	compare \
@@ -68,6 +77,9 @@ blue:       pokeblue.gbc
 blue_debug: pokeblue_debug.gbc
 red_vc:     pokered.patch
 blue_vc:    pokeblue.patch
+purple:		pokepurple.gbc
+purple_debug: pokepurple_debug.gbc
+magenta:	pokemagenta.gbc
 
 clean: tidy
 	find gfx \
@@ -90,6 +102,9 @@ tidy:
 	      $(pokered_vc_obj) \
 	      $(pokeblue_vc_obj) \
 	      $(pokeblue_debug_obj) \
+		  $(pokepurple_obj) \
+		  $(pokepurple_debug_obj) \
+		  $(pokemagenta_obj) \
 	      rgbdscheck.o
 	$(MAKE) clean -C tools/
 
@@ -111,6 +126,9 @@ $(pokeblue_obj):       RGBASMFLAGS += -D _BLUE
 $(pokeblue_debug_obj): RGBASMFLAGS += -D _BLUE -D _DEBUG
 $(pokered_vc_obj):     RGBASMFLAGS += -D _RED -D _RED_VC
 $(pokeblue_vc_obj):    RGBASMFLAGS += -D _BLUE -D _BLUE_VC
+$(pokepurple_obj):        RGBASMFLAGS += -D _PURPLE
+$(pokepurple_debug_obj): RGBASMFLAGS += -D _PURPLE -D _DEBUG
+$(pokemagenta_obj):       RGBASMFLAGS += -D _MAGENTA
 
 %.patch: %_vc.gbc %.gbc vc/%.patch.template
 	tools/make_patch $*_vc.sym $^ $@
@@ -139,6 +157,9 @@ $(foreach obj, $(pokeblue_obj), $(eval $(call DEP,$(obj),$(obj:_blue.o=.asm))))
 $(foreach obj, $(pokeblue_debug_obj), $(eval $(call DEP,$(obj),$(obj:_blue_debug.o=.asm))))
 $(foreach obj, $(pokered_vc_obj), $(eval $(call DEP,$(obj),$(obj:_red_vc.o=.asm))))
 $(foreach obj, $(pokeblue_vc_obj), $(eval $(call DEP,$(obj),$(obj:_blue_vc.o=.asm))))
+$(foreach obj, $(pokepurple_obj), $(eval $(call DEP,$(obj),$(obj:_purple.o=.asm))))
+$(foreach obj, $(pokepurple_debug_obj), $(eval $(call DEP,$(obj),$(obj:_purple_debug.o=.asm))))
+$(foreach obj, $(pokemagenta_obj), $(eval $(call DEP,$(obj),$(obj:_magenta.o=.asm))))
 
 endif
 
@@ -149,6 +170,9 @@ pokeblue.gbc:       RGBLINKFLAGS += -p 0x00
 pokeblue_debug.gbc: RGBLINKFLAGS += -p 0xff
 pokered_vc.gbc:     RGBLINKFLAGS += -p 0x00
 pokeblue_vc.gbc:    RGBLINKFLAGS += -p 0x00
+pokepurple.gbc:        RGBLINKFLAGS += -p 0x00
+pokepurple_debug.gbc: RGBLINKFLAGS += -p 0xff
+pokemagenta.gbc:       RGBLINKFLAGS += -p 0x00
 
 RGBFIXFLAGS += -jsv -n 0 -k 01 -l 0x33 -m MBC3+RAM+BATTERY -r 03
 pokered.gbc:        RGBFIXFLAGS += -p 0x00 -t "POKEMON RED"
@@ -156,6 +180,9 @@ pokeblue.gbc:       RGBFIXFLAGS += -p 0x00 -t "POKEMON BLUE"
 pokeblue_debug.gbc: RGBFIXFLAGS += -p 0xff -t "POKEMON BLUE"
 pokered_vc.gbc:     RGBFIXFLAGS += -p 0x00 -t "POKEMON RED"
 pokeblue_vc.gbc:    RGBFIXFLAGS += -p 0x00 -t "POKEMON BLUE"
+pokepurple.gbc:        RGBFIXFLAGS += -p 0x00 -t "PINOCCHIO"
+pokepurple_debug.gbc: RGBFIXFLAGS += -p 0xff -t "PINOCCHIO"
+pokemagenta.gbc:       RGBFIXFLAGS += -p 0x00 -t "KAERUNOTAMENI"
 
 %.gbc: $$(%_obj) layout.link
 	$(RGBLINK) $(RGBLINKFLAGS) -l layout.link -m $*.map -n $*.sym -o $@ $(filter %.o,$^)

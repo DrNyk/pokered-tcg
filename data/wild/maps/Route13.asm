@@ -24,6 +24,30 @@ IF DEF(_BLUE)
 	db 28, WEEPINBELL
 	db 30, WEEPINBELL
 ENDC
+IF DEF(_PURPLE)
+	db 24, ODDISH
+	db 25, PIDGEY
+	db 27, PIDGEY
+	db 24, VENONAT
+	db 22, BELLSPROUT
+	db 26, VENONAT
+	db 26, ODDISH
+	db 25, DITTO
+	db 28, WEEPINBELL
+	db 30, GLOOM
+ENDC
+IF DEF(_MAGENTA)
+	db 24, ODDISH
+	db 25, PIDGEY
+	db 27, PIDGEY
+	db 24, VENONAT
+	db 22, BELLSPROUT
+	db 26, VENONAT
+	db 26, ODDISH
+	db 25, DITTO
+	db 28, WEEPINBELL
+	db 30, GLOOM
+ENDC
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

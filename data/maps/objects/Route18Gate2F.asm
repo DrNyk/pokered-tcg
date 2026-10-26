@@ -13,5 +13,5 @@ Route18Gate2F_Object:
 
 	def_object_events
 	object_event  4,  2, SPRITE_YOUNGSTER, WALK, LEFT_RIGHT, TEXT_ROUTE18GATE2F_YOUNGSTER
-
+	object_event  2,  4, SPRITE_GAMEBOY_KID, STAY, DOWN, TEXT_TRADEBACK
 	def_warps_to ROUTE_18_GATE_2F

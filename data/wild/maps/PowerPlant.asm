@@ -16,6 +16,14 @@ IF DEF(_BLUE)
 	db 33, RAICHU
 	db 36, RAICHU
 ENDC
+IF DEF(_PURPLE)
+	db 33, ELECTABUZZ
+	db 36, RAICHU
+ENDC
+IF DEF(_MAGENTA)
+	db 33, ELECTABUZZ
+	db 36, RAICHU
+ENDC
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate

@@ -24,6 +24,30 @@ IF DEF(_BLUE)
 	db 37, MUK
 	db 39, WEEZING
 ENDC
+IF DEF(_PURPLE)
+	db 32, KOFFING
+	db 30, KOFFING
+	db 34, PONYTA
+	db 30, VULPIX
+	db 34, GROWLITHE
+	db 32, PONYTA
+	db 30, GRIMER
+	db 28, VULPIX
+	db 37, WEEZING
+	db 39, MUK
+ENDC
+IF DEF(_MAGENTA)
+	db 32, KOFFING
+	db 30, KOFFING
+	db 34, PONYTA
+	db 30, VULPIX
+	db 34, GROWLITHE
+	db 32, PONYTA
+	db 30, GRIMER
+	db 28, VULPIX
+	db 37, WEEZING
+	db 39, MUK
+ENDC
 	end_grass_wildmons
 
 	def_water_wildmons 0 ; encounter rate
