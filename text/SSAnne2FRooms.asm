@@ -8,12 +8,29 @@ _SSAnne2FRoomsGentleman3Text::
 	line "like this!"
 	prompt
 
+IF DEF(_MAGENTA)
+_SSAnne2FRoomsGentleman4Text::
+	text "Ah, the bonds"
+	line "that can be made"
+	cont "when on an"
+	cont "adventure."
+	para "Would you like"
+	line "to make memories?"
+	para "I can offer you"
+	line "#MON for your"
+	cont "journey. Just let"
+	cont "me know what"
+	cont "kind of #MON"
+	cont "interests you."
+	prompt
+ELSE
 _SSAnne2FRoomsGentleman4Text::
 	text "Ah yes, I have"
 	line "seen some #MON"
 	cont "ferry people"
 	cont "across the water!"
 	done
+ENDC
 
 _SSAnne2FRoomsGrampsText::
 	text "#MON can CUT"

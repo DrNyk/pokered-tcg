@@ -117,7 +117,8 @@
 ; Celadon City events
 	const_next $180
 	const EVENT_GOT_TM41
-	const_skip 11
+	const EVENT_CELADON_GAMBLER
+	const_skip 10
 	const EVENT_GOT_TM13
 	const EVENT_GOT_TM48
 	const EVENT_GOT_TM49
@@ -551,7 +552,8 @@
 
 ; S.S. Anne events
 	const_next $5C0
-	const_skip 4
+	const EVENT_SS_ANNE_GENTLEMAN
+	const_skip 3
 	const EVENT_BEAT_SS_ANNE_5_TRAINER_0
 	const EVENT_BEAT_SS_ANNE_5_TRAINER_1
 	const_skip 26

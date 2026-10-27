@@ -307,3 +307,27 @@ _Thanks4Text::
 	text "All done, I hope"
 	line "that helped."
 	done
+	
+_BuyAPack::
+	text "Each pack is"
+	line $F0, "1500. Which one"
+	cont "do you want?"
+	done
+	
+_PackTooPricey:: ; Gambler themed harshness
+	text "'Ey now! This"
+	line "isn't a charity!"
+	para "Come back when"
+	line "you've got money."
+	done
+	
+_PackTooPricey2::
+	text "Shucks, it seems"
+	line "you don't have"
+	cont "enough money."
+	done
+	
+_PackDeclined::
+	text "I hope you'll"
+	line "reconsider."
+	done
